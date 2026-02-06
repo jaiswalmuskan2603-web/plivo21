@@ -46,7 +46,6 @@ class Incident(models.Model):
         default="Investigating",
     )
 
-    services = models.ManyToManyField(Service, related_name="incidents")
     updates = models.JSONField(default=list)
     created_at = models.DateTimeField(auto_now_add=True)
 

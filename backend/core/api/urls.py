@@ -4,6 +4,7 @@ from home2.views import (
     admin_service,
     public_services,
     incidents,
+    resolve_incident
 )
 
 urlpatterns = [
@@ -13,5 +14,5 @@ urlpatterns = [
     path("admin/services/", admin_service),            # POST
     path("admin/services/<int:pk>/", admin_service),   # PUT, DELETE
     path("incidents/", incidents),
-    # path("incidents/<int:pk>/resolve/", resolve_incident),
+    path("incidents/<int:pk>/", resolve_incident),
 ]

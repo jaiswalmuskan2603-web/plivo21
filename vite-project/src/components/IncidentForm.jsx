@@ -29,7 +29,7 @@ export default function IncidentForm({ services, onCreate }) {
         className="border p-2 rounded w-full"
         onChange={(e) => setServiceId(e.target.value)}
       >
-        <option value="">Affected service</option>
+        {/* <option value="">Affected service</option> */}
         {services.map((s) => (
           <option key={s.id} value={s.id}>
             {s.name}

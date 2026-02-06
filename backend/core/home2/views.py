@@ -35,6 +35,19 @@ def incidents(request):
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
 
+@api_view(["PUT"])
+def resolve_incident(request, pk):
+    incident = Incident.objects.get(id=pk)
+
+    incident.status = "Resolved"
+
+    # Optional but recommended: add an update entry
+    incident.updates.append("Incident resolved.")
+    incident.save()
+
+    serializer = IncidentSerializer(incident)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
 @api_view(["GET"])
 def public_services(request):
     services = Service.objects.all().order_by("name")
