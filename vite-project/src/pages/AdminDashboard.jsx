@@ -1,46 +1,75 @@
 // src/pages/AdminDashboard.jsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ServiceForm from "../components/ServiceForm";
 import IncidentForm from "../components/IncidentForm";
 import IncidentCard from "../components/IncidentCard";
 
-
+const API_BASE = "http://127.0.0.1:8000/api"; // change if deployed
 
 export default function AdminDashboard() {
+  const [services, setServices] = useState([]);
+  const [incidents, setIncidents] = useState([]);
 
-const INITIAL_SERVICES = [
-  { id: 1, name: "Website", status: "Operational" },
-  { id: 2, name: "API", status: "Degraded Performance" },
-  { id: 3, name: "Database", status: "Major Outage" },
-];
+  /* ---------------- FETCH DATA ---------------- */
 
-const INITIAL_INCIDENTS = [
-  {
-    id: 1,
-    title: "API latency issues",
-    status: "Investigating",
-    services: [2],
-    updates: ["We are investigating increased response times."],
-  },
-];
-  const [services, setServices] = useState(INITIAL_SERVICES);
-  const [incidents, setIncidents] = useState(INITIAL_INCIDENTS);
+  useEffect(() => {
+    fetchServices();
+    fetchIncidents();
+  }, []);
 
-  const addService = (service) => {
-    setServices([...services, { ...service, id: Date.now() }]);
+  const fetchServices = async () => {
+    const res = await fetch(`${API_BASE}/public/services/`);
+    const data = await res.json();
+    setServices(data);
   };
 
-  const createIncident = (incident) => {
-    setIncidents([...incidents, { ...incident, id: Date.now() }]);
+  const fetchIncidents = async () => {
+    const res = await fetch(`${API_BASE}/incidents/`);
+    const data = await res.json();
+    setIncidents(data);
   };
 
-  const resolveIncident = (id) => {
-    setIncidents(
-      incidents.map((i) =>
-        i.id === id ? { ...i, status: "Resolved" } : i
-      )
+  /* ---------------- SERVICES ---------------- */
+
+  const addService = async (service) => {
+    const res = await fetch(`${API_BASE}/admin/services/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(service),
+    });
+
+    const newService = await res.json();
+    setServices((prev) => [...prev, newService]);
+  };
+
+  /* ---------------- INCIDENTS ---------------- */
+
+  const createIncident = async (incident) => {
+    const res = await fetch(`${API_BASE}/incidents/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(incident),
+    });
+
+    const newIncident = await res.json();
+    setIncidents((prev) => [...prev, newIncident]);
+  };
+
+  const resolveIncident = async (id) => {
+    const res = await fetch(`${API_BASE}/incidents/${id}/`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "Resolved" }),
+    });
+
+    const updated = await res.json();
+
+    setIncidents((prev) =>
+      prev.map((i) => (i.id === id ? updated : i))
     );
   };
+
+  /* ---------------- UI ---------------- */
 
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-8">
