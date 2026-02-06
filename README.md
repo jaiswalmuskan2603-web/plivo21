@@ -1,6 +1,6 @@
 ### Frontend:
-cd ./vite-project
-npm run dev
+##### cd ./vite-project 
+##### npm run dev
 ### Backend:
-cd ./backend
-python manage.py runserver
+##### cd ./backend
+##### python manage.py runserver
