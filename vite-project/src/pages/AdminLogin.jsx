@@ -1,14 +1,26 @@
-// src/pages/AdminLogin.jsx
 import { useState } from "react";
+
+const ADMIN_CREDENTIALS = {
+  email: "admin@gmailgit.com",
+  password: "admin123",
+};
 
 export default function AdminLogin({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (email && password) {
+
+    if (
+      email === ADMIN_CREDENTIALS.email &&
+      password === ADMIN_CREDENTIALS.password
+    ) {
+      setError("");
       onLogin();
+    } else {
+      setError("Invalid email or password");
     }
   };
 
@@ -29,11 +41,15 @@ export default function AdminLogin({ onLogin }) {
 
         <input
           type="password"
-          className="w-full border p-2 mb-4 rounded"
+          className="w-full border p-2 mb-3 rounded"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+
+        {error && (
+          <p className="text-red-600 text-sm mb-3">{error}</p>
+        )}
 
         <button className="w-full bg-black text-white py-2 rounded">
           Login
