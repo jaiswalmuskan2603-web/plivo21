@@ -1,4 +1,3 @@
-# core/models.py
 from django.db import models
 
 class Service(models.Model):
@@ -14,7 +13,7 @@ class Service(models.Model):
     status = models.CharField(
         max_length=30,
         choices=STATUS_CHOICES,
-        default="Operationall",
+        default="Operational",
     )
     updated_at = models.DateTimeField(auto_now=True)
 

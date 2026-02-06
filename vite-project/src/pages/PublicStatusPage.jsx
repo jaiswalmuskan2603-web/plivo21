@@ -8,41 +8,18 @@ export default function PublicStatusPage() {
     const [error, setError] = useState(null);
     
     
-    const DUMMY_SERVICES = [
-        {
-            id: 1,
-            name: "Website",
-            description: "Public-facing web application",
-            status: "Operational",
-            updated_at: "2026-02-05T10:30:00Z",
-        },
-        {
-            id: 2,
-            name: "API",
-            description: "Core backend services",
-            status: "Degraded Performance",
-            updated_at: "2026-02-05T10:15:00Z",
-        },
-   ]
     useEffect(() => {
         setLoading(true);
 
-        const timer = setTimeout(() => {
-            setServices(DUMMY_SERVICES);
-            setLoading(false);
-        }, 800); // simulate network delay
-
-        return () => clearTimeout(timer);
-
-
-        // fetch("http://localhost:8000/api/services/")
-        // .then((res) => {
-        //     if (!res.ok) throw new Error("Failed to fetch services");
-        //     return res.json();
-        // })
-        // .then((data) => setServices(data))
-        // .catch((err) => setError(err.message))
-        // .finally(() => setLoading(false));
+        fetch("http://127.0.0.1:8000/api/public/services/")
+        .then((res) => {
+            if (!res.ok) throw new Error("Failed to fetch services");
+            return res.json();
+        })
+        
+        .then((data) => setServices(data))
+        .catch((err) => setError(err.message))
+        .finally(() => setLoading(false));
     }, []);
 
     return (
