@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 const ADMIN_CREDENTIALS = {
-  email: "admin@gmailgit.com",
+  email: "admin@gmail.com",
   password: "admin123",
 };
 

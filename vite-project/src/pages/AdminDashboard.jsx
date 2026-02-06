@@ -1,10 +1,9 @@
-// src/pages/AdminDashboard.jsx
 import { useEffect, useState } from "react";
 import ServiceForm from "../components/ServiceForm";
 import IncidentForm from "../components/IncidentForm";
 import IncidentCard from "../components/IncidentCard";
 
-const API_BASE = "http://127.0.0.1:8000/api"; // change if deployed
+const API_BASE = "http://127.0.0.1:8000/api";
 
 export default function AdminDashboard() {
   const [services, setServices] = useState([]);
@@ -42,6 +41,28 @@ export default function AdminDashboard() {
     setServices((prev) => [...prev, newService]);
   };
 
+  const updateService = async (id, updatedFields) => {
+    const res = await fetch(`${API_BASE}/admin/services/${id}/`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedFields),
+    });
+
+    const updatedService = await res.json();
+
+    setServices((prev) =>
+      prev.map((s) => (s.id === id ? updatedService : s))
+    );
+  };
+
+  const deleteService = async (id) => {
+    await fetch(`${API_BASE}/admin/services/${id}/`, {
+      method: "DELETE",
+    });
+
+    setServices((prev) => prev.filter((s) => s.id !== id));
+  };
+
   /* ---------------- INCIDENTS ---------------- */
 
   const createIncident = async (incident) => {
@@ -62,10 +83,10 @@ export default function AdminDashboard() {
       body: JSON.stringify({ status: "Resolved" }),
     });
 
-    const updated = await res.json();
+    const updatedIncident = await res.json();
 
     setIncidents((prev) =>
-      prev.map((i) => (i.id === id ? updated : i))
+      prev.map((i) => (i.id === id ? updatedIncident : i))
     );
   };
 
@@ -75,24 +96,54 @@ export default function AdminDashboard() {
     <div className="p-6 max-w-4xl mx-auto space-y-8">
       <h1 className="text-2xl font-bold">Admin Dashboard</h1>
 
+      {/* -------- SERVICES -------- */}
       <section>
         <h2 className="text-xl font-semibold mb-2">Services</h2>
         <ServiceForm onSave={addService} />
 
-        <ul className="space-y-2">
+        <ul className="space-y-2 mt-4">
           {services.map((s) => (
-            <li key={s.id} className="border p-3 rounded bg-white">
-              {s.name} — <strong>{s.status}</strong>
+            <li
+              key={s.id}
+              className="border p-3 rounded bg-white flex justify-between items-center"
+            >
+              <div>
+                <div className="font-medium">{s.name}</div>
+                <div className="text-sm text-gray-600">{s.status}</div>
+              </div>
+
+              <div className="flex gap-2 items-center">
+                <select
+                  value={s.status}
+                  onChange={(e) =>
+                    updateService(s.id, { status: e.target.value })
+                  }
+                  className="border rounded px-2 py-1 text-sm"
+                >
+                  <option>Operational</option>
+                  <option>Degraded Performance</option>
+                  <option>Partial Outage</option>
+                  <option>Major Outage</option>
+                </select>
+
+                <button
+                  onClick={() => deleteService(s.id)}
+                  className="text-red-600 text-sm"
+                >
+                  Delete
+                </button>
+              </div>
             </li>
           ))}
         </ul>
       </section>
 
+      {/* -------- INCIDENTS -------- */}
       <section>
         <h2 className="text-xl font-semibold mb-2">Incidents</h2>
         <IncidentForm services={services} onCreate={createIncident} />
 
-        <div className="space-y-3">
+        <div className="space-y-3 mt-4">
           {incidents.map((i) => (
             <IncidentCard
               key={i.id}
